@@ -9,7 +9,7 @@ export default async function toArray(filename: string) {
       'utf-8'
     );
 
-    const arr = contents.split(/\r?\n/);
+    const arr = contents.split(/\r?\n+/);
 
     return arr;
   } catch (err: unknown) {
