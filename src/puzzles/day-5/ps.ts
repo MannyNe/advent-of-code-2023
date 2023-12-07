@@ -1,4 +1,9 @@
-seeds: 222541566 218404460 670428364 432472902 2728902838 12147727 3962570697 52031641 2849288350 113747257 3648852659 73423293 4036058422 190602154 1931540843 584314999 3344622241 180428346 1301166628 310966761
+/* eslint-disable no-useless-escape */
+/* eslint-disable functional/immutable-data */
+/* eslint-disable functional/no-let */
+/* eslint-disable functional/no-loop-statement */
+/* eslint-disable prefer-const */
+const inputData = `seeds: 222541566 218404460 670428364 432472902 2728902838 12147727 3962570697 52031641 2849288350 113747257 3648852659 73423293 4036058422 190602154 1931540843 584314999 3344622241 180428346 1301166628 310966761
 
 seed-to-soil map:
 357888202 777841571 45089383
@@ -240,3 +245,74 @@ humidity-to-location map:
 968038003 1911817624 135403149
 2087721389 2835070776 93923407
 1382789085 946284271 103970355
+`;
+
+const seedsArray = inputData
+  .replace(/\n/g, '')
+  .match(/seeds: ([\d\s]+)/)[1]
+  .split(' ')
+  .map(Number);
+
+const seedsObj = {};
+
+console.log('SEEDS ARRAY: ', seedsArray);
+
+seedsArray.forEach((seed, index) => {
+  if (index % 2 === 0) {
+    seedsObj[seed] = seedsArray[index + 1];
+  }
+});
+
+console.log('SEEDS OBJ: ', seedsObj);
+
+const maps = inputData
+  .split(/\n+[a-z\-]+ map:\n/)
+  .splice(1)
+  .map((x) => x.split(/\n/).map((y) => y.split(' ').map(Number)));
+
+console.log('MAPS: ', maps);
+
+const newMaps = maps.reverse().map((x) => x.sort((a, b) => a[0] - b[0]));
+
+console.log('NEW MAPS: ', newMaps);
+
+const locations = newMaps[0];
+
+console.log('LOCATIONS: ', locations);
+
+const otherMaps = newMaps.splice(1);
+
+console.log(otherMaps);
+
+const findLowest = () => {
+  let lowestStart;
+  for (let locationSet of locations) {
+    let currentNumber = locationSet[1];
+    for (let i = locationSet[1]; i < locationSet[1] + locationSet[2]; i++) {
+      currentNumber = i;
+      otherMaps.forEach((otherMap) => {
+        for (let set of otherMap) {
+          if (currentNumber >= set[0] && currentNumber < set[0] + set[2]) {
+            currentNumber = set[1] + (currentNumber - set[0]);
+            break;
+          }
+        }
+      });
+      for (const seed of Object.keys(seedsObj)) {
+        if (currentNumber >= +seed && currentNumber < +seed + seedsObj[seed]) {
+          lowestStart = i - locationSet[1];
+          break;
+        }
+      }
+      if (lowestStart >= 0) {
+        break;
+      }
+    }
+    if (lowestStart >= 0) {
+      break;
+    }
+  }
+  return lowestStart;
+};
+
+console.log(findLowest());
