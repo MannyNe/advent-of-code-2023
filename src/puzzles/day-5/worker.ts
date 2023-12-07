@@ -3,12 +3,6 @@
 /* eslint-disable functional/no-let */
 import { parentPort, workerData } from 'worker_threads';
 
-//let isFinished = false;
-/* let counter = 0;
-for (let i = 0; i < 20_000_000_000 / workerData.thread_count; i++) {
-  counter++;
-} */
-
 function calc() {
   let lowestNumber = workerData.seed;
   for (let val = lowestNumber; val < workerData.seedRange; val++) {
@@ -21,10 +15,6 @@ function calc() {
         },
         index: number
       ) => {
-        /*         parentPort.postMessage(
-          `Start: ${workerData.seed}, End: ${workerData.seedRange}`
-        );
-        parentPort.postMessage('----------------'); */
         let isAdded = false;
         for (let j = 0; j < valueSeed.almanacValue.length; j++) {
           let numList = valueSeed.almanacValue[j]
@@ -55,10 +45,9 @@ function calc() {
         }
       }
     );
-    //finalLenCount.push(newSeed);
     lowestNumber = newSeed < lowestNumber ? newSeed : lowestNumber;
   }
   return lowestNumber;
 }
-//isFinished = true;
-parentPort.postMessage(`Final Result: ${calc()}`);
+
+parentPort.postMessage(calc());
